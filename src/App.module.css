@@ -1,0 +1,25 @@
+.main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+
+    flex-direction: column;
+}
+
+.line {
+    width: 300px;
+    height: 3px;
+    background-color: red;
+    position: relative;
+}
+
+.dot {
+    height: 20px;
+    width: 20px;
+    background-color: green;
+    border-radius: 50%;
+    position: absolute;
+
+    cursor: pointer;
+}
