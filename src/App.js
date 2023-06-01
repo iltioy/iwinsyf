@@ -10,14 +10,21 @@ audio.currentTime = 0.5;
 let time = 0;
 let lineWidth = 300;
 
+const allPhrases = [];
+
 function App() {
     const [timeLine, setTimeLine] = useState(0);
     const [bound, setBound] = useState(0);
+    const [dragPositon, setDragPosition] = useState({ x: 0 });
 
+    const [currentPhrase, setCurrentPhrase] = useState();
+
+    const nodeRef = useRef();
     const dotRef = useRef();
 
     const play = () => {
         // audio.currentTime += 5;
+        setTimeLine(0);
         audio.play();
     };
 
@@ -27,7 +34,17 @@ function App() {
     };
 
     const handleStop = (e, data) => {
-        audio.currentTime = (data.x / lineWidth) * audio.duration;
+        let deltaX = data.x + timeLine;
+        // console.log(deltaX);
+        audio.currentTime = (deltaX / lineWidth) * audio.duration;
+
+        if (dotRef) {
+            console.log(dotRef.current.offsetLeft);
+        }
+
+        if (nodeRef) {
+            console.log("node", nodeRef.current);
+        }
     };
 
     useEffect(() => {
@@ -36,7 +53,6 @@ function App() {
                 setTimeLine(
                     (prevState) => prevState + lineWidth / audio.duration
                 );
-                setBound((prevState) => prevState - timeLine);
             }
         }, 1000);
 
@@ -44,6 +60,18 @@ function App() {
             clearInterval(interval);
         };
     }, [audio.paused, audio.currentTime, audio.duration]);
+
+    // useEffect(() => {
+    //     let interval = setInterval(() => {
+    //         console.log(audio.currentTime);
+    //     }, 100);
+
+    //     return () => {
+    //         clearInterval(interval);
+    //     };
+    // }, [audio.currentTime]);
+
+    useEffect(() => {}, [dotRef]);
 
     return (
         <div className={styles.main}>
@@ -53,13 +81,17 @@ function App() {
             <div className={styles.line}>
                 <Draggable
                     axis="x"
-                    bounds={{ left: bound, right: lineWidth - 8.5 + bound }}
+                    bounds="parent"
                     onStop={handleStop}
+                    ref={nodeRef}
                 >
                     <div
                         ref={dotRef}
                         className={styles.dot}
-                        style={{ left: timeLine, top: -8.5 }}
+                        style={{
+                            top: -8.5,
+                            left: timeLine,
+                        }}
                     />
                 </Draggable>
             </div>
